@@ -122,28 +122,51 @@ async function connectDatabase(retries = 5, delay = 5000) {
   return false;
 }
 
-// Run migrations programmatically
+// Run migrations programmatically using Sequelize
 async function runMigrations() {
   try {
-    const { execSync } = await import('child_process');
-    console.log('Running database migrations...');
-    execSync('npm run migrate', { 
-      stdio: 'inherit',
-      env: { ...process.env, NODE_ENV: 'production' }
-    });
-    console.log('✓ Migrations completed successfully');
+    console.log('Checking if migrations are needed...');
+    
+    // Check if users table exists
+    const [tables] = await sequelize.query("SHOW TABLES LIKE 'users'");
+    if (tables.length > 0) {
+      console.log('✓ Database tables already exist');
+      return true;
+    }
+
+    console.log('Tables not found, running migrations...');
+    
+    // Import and run migrations directly
+    const createUsers = (await import('./migrations/20240101000001-create-users.mjs')).default;
+    const createVideos = (await import('./migrations/20240101000002-create-videos.mjs')).default;
+    
+    const queryInterface = sequelize.getQueryInterface();
+    const Sequelize = sequelize.constructor;
+    
+    await createUsers.up(queryInterface, Sequelize);
+    console.log('✓ Created users table');
+    
+    await createVideos.up(queryInterface, Sequelize);
+    console.log('✓ Created videos table');
+    
+    console.log('✓ All migrations completed successfully');
     return true;
   } catch (error) {
     console.error('⚠️  Migration error:', error.message);
-    // Check if tables already exist
+    console.error(error.stack);
+    
+    // Check if tables exist despite error
     try {
-      await sequelize.query('SELECT 1 FROM users LIMIT 1');
-      console.log('✓ Tables already exist, continuing...');
-      return true;
+      const [tables] = await sequelize.query("SHOW TABLES LIKE 'users'");
+      if (tables.length > 0) {
+        console.log('✓ Tables exist despite migration error, continuing...');
+        return true;
+      }
     } catch (e) {
-      console.error('✗ Tables do not exist and migrations failed');
-      return false;
+      // Ignore check error
     }
+    
+    return false;
   }
 }
 
