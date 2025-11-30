@@ -3,8 +3,6 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './config/swagger.js';
 import db from './models/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -28,41 +26,12 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Swagger Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'User-Video Management API Documentation'
-}));
-
 // Routes
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/videos', videoRoutes);
 
-/**
- * @swagger
- * /health:
- *   get:
- *     summary: Health check endpoint
- *     tags: [Health]
- *     responses:
- *       200:
- *         description: Server is running
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: Server is running
- *                 timestamp:
- *                   type: string
- *                   format: date-time
- */
+// Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,

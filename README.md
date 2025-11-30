@@ -10,7 +10,6 @@ A RESTful API built with Node.js, Express, MySQL, and Sequelize for managing use
 - **Database**: MySQL with Sequelize ORM
 - **Validation**: Request validation using Joi
 - **File Upload**: Avatar image upload using Multer
-- **Swagger Documentation**: Interactive API docs at `/api-docs`
 
 ## Prerequisites
 
@@ -77,15 +76,14 @@ The API will be available at `http://localhost:3000`
 - `PUT /videos/:id` - Update video (protected)
 - `DELETE /videos/:id` - Delete video (protected)
 
-### Documentation
-- `GET /api-docs` - Swagger UI documentation
+### Health Check
 - `GET /health` - Health check endpoint
 
 ## Project Structure
 
 ```
 test1/
-├── config/          # Database and Swagger configuration
+├── config/          # Database configuration
 ├── controllers/     # Request handlers
 ├── middleware/      # Auth, validation, upload middleware
 ├── migrations/      # Database migrations
@@ -115,8 +113,8 @@ See `render.yaml` for configuration. Note: Render uses PostgreSQL by default.
 
 ## Documentation
 
-- **Swagger Docs:** [SWAGGER_DOCS.md](./SWAGGER_DOCS.md)
-- **API Docs:** Visit `http://localhost:3000/api-docs` when server is running
+- **API Endpoints:** See API Endpoints section above
+- **Health Check:** `GET /health` - Check if server is running
 
 ## Testing
 
