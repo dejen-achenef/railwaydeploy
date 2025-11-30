@@ -136,12 +136,14 @@ async function runMigrations() {
 
     console.log('Tables not found, running migrations...');
     
-    // Import and run migrations directly
+    // Import Sequelize and migrations
+    const SequelizeModule = await import('sequelize');
+    const Sequelize = SequelizeModule.default;
+    
     const createUsers = (await import('./migrations/20240101000001-create-users.mjs')).default;
     const createVideos = (await import('./migrations/20240101000002-create-videos.mjs')).default;
     
     const queryInterface = sequelize.getQueryInterface();
-    const Sequelize = sequelize.constructor;
     
     await createUsers.up(queryInterface, Sequelize);
     console.log('✓ Created users table');
