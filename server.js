@@ -101,24 +101,46 @@ app.use((req, res) => {
   });
 });
 
+// Database connection with retry logic
+async function connectDatabase(retries = 5, delay = 5000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await sequelize.authenticate();
+      console.log('✓ Database connection established successfully.');
+      return true;
+    } catch (error) {
+      console.error(`Database connection attempt ${i + 1}/${retries} failed:`, error.message);
+      if (i < retries - 1) {
+        console.log(`Retrying in ${delay / 1000} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        console.error('Unable to connect to the database after all retries:', error);
+        return false;
+      }
+    }
+  }
+  return false;
+}
+
 // Database connection and server start
 async function startServer() {
   try {
-    // Test database connection
-    await sequelize.authenticate();
-    console.log('✓ Database connection established successfully.');
-
-    // Sync models (optional - migrations should handle this)
-    // await sequelize.sync({ alter: false });
+    // Connect to database with retries
+    const dbConnected = await connectDatabase();
     
-    // Start server
-    app.listen(PORT, () => {
+    if (!dbConnected) {
+      console.error('Failed to connect to database. Server will not start.');
+      process.exit(1);
+    }
+
+    // Start server even if migrations haven't run yet
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`✓ Server is running on port ${PORT}`);
       console.log(`✓ Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`✓ API available at http://localhost:${PORT}`);
+      console.log(`✓ API available at http://0.0.0.0:${PORT}`);
     });
   } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    console.error('Error starting server:', error);
     process.exit(1);
   }
 }
