@@ -20,11 +20,11 @@ module.exports = {
     logging: false,
   },
   production: {
-    username: process.env.DB_USER || process.env.MYSQLUSER || "root",
-    password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || "",
-    database: process.env.DB_NAME || process.env.MYSQLDATABASE || "railway",
-    host: process.env.DB_HOST || process.env.MYSQLHOST || process.env.MYSQL_HOST || "localhost",
-    port: process.env.DB_PORT || process.env.MYSQLPORT || process.env.MYSQL_PORT || 3306,
+    username: process.env.DB_USER || process.env.MYSQLUSER || process.env.MYSQL_USER || "root",
+    password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || process.env.MYSQL_ROOT_PASSWORD || "",
+    database: process.env.DB_NAME || process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE || "railway",
+    host: process.env.DB_HOST || process.env.MYSQLHOST || process.env.MYSQL_HOST || process.env.RAILWAY_PRIVATE_DOMAIN || "localhost",
+    port: parseInt(process.env.DB_PORT || process.env.MYSQLPORT || process.env.MYSQL_PORT || process.env.RAILWAY_TCP_PROXY_PORT || "3306"),
     dialect: "mysql",
     logging: console.log, // Enable logging to debug connection
     retry: {
