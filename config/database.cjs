@@ -20,13 +20,13 @@ module.exports = {
     logging: false,
   },
   production: {
-    username: process.env.DB_USER || "root",
-    password: process.env.DB_PASSWORD || "",
-    database: process.env.DB_NAME || "railway",
-    host: process.env.DB_HOST || process.env.MYSQL_HOST || "localhost",
-    port: process.env.DB_PORT || process.env.MYSQL_PORT || 3306,
+    username: process.env.DB_USER || process.env.MYSQLUSER || "root",
+    password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || "",
+    database: process.env.DB_NAME || process.env.MYSQLDATABASE || "railway",
+    host: process.env.DB_HOST || process.env.MYSQLHOST || process.env.MYSQL_HOST || "localhost",
+    port: process.env.DB_PORT || process.env.MYSQLPORT || process.env.MYSQL_PORT || 3306,
     dialect: "mysql",
-    logging: false,
+    logging: console.log, // Enable logging to debug connection
     retry: {
       max: 5,
       match: [
