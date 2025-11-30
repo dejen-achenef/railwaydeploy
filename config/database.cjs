@@ -23,8 +23,8 @@ module.exports = {
     username: process.env.DB_USER || "root",
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "railway",
-    host: process.env.DB_HOST || "localhost",
-    port: process.env.DB_PORT || 3306,
+    host: process.env.DB_HOST || process.env.MYSQL_HOST || "localhost",
+    port: process.env.DB_PORT || process.env.MYSQL_PORT || 3306,
     dialect: "mysql",
     logging: false,
     retry: {
