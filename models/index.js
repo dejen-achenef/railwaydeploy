@@ -7,7 +7,7 @@ import { createRequire } from "module";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || "production";
+const env = process.env.NODE_ENV || "development";
 
 // Use require for the config file since it's CommonJS (needed for Sequelize CLI)
 const require = createRequire(import.meta.url);
