@@ -1,0 +1,38 @@
+services:
+  # Node.js API Service
+  - type: web
+    name: video-learning-api
+    env: node
+    plan: free  # or starter ($7/mo), standard ($25/mo), pro
+    buildCommand: npm install
+    startCommand: npm start
+    # Note: Set root directory to "test1" in Render dashboard
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DB_HOST
+        sync: false  # Set manually from database service
+      - key: DB_PORT
+        value: 3306  # Use 5432 for PostgreSQL
+      - key: DB_NAME
+        sync: false  # Set manually from database service
+      - key: DB_USER
+        sync: false  # Set manually from database service
+      - key: DB_PASSWORD
+        sync: false  # Set manually from database service
+      - key: JWT_SECRET
+        generateValue: true  # Render will generate a secure secret
+      - key: JWT_EXPIRES_IN
+        value: 7d
+
+databases:
+  # MySQL Database (Note: MySQL requires paid plan on Render)
+  # For free tier, use PostgreSQL instead
+  - name: video-learning-db
+    databaseName: video_learning
+    user: app_user
+    plan: starter  # MySQL requires paid plan ($7+/month)
+    # Alternative: Use PostgreSQL (free) - see RENDER_DEPLOY.md
+
