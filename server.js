@@ -122,6 +122,31 @@ async function connectDatabase(retries = 5, delay = 5000) {
   return false;
 }
 
+// Run migrations programmatically
+async function runMigrations() {
+  try {
+    const { execSync } = await import('child_process');
+    console.log('Running database migrations...');
+    execSync('npm run migrate', { 
+      stdio: 'inherit',
+      env: { ...process.env, NODE_ENV: 'production' }
+    });
+    console.log('✓ Migrations completed successfully');
+    return true;
+  } catch (error) {
+    console.error('⚠️  Migration error:', error.message);
+    // Check if tables already exist
+    try {
+      await sequelize.query('SELECT 1 FROM users LIMIT 1');
+      console.log('✓ Tables already exist, continuing...');
+      return true;
+    } catch (e) {
+      console.error('✗ Tables do not exist and migrations failed');
+      return false;
+    }
+  }
+}
+
 // Database connection and server start
 async function startServer() {
   try {
@@ -133,7 +158,21 @@ async function startServer() {
       process.exit(1);
     }
 
-    // Start server even if migrations haven't run yet
+    // Run migrations if tables don't exist
+    const tablesExist = await sequelize.query('SHOW TABLES LIKE "users"')
+      .then(([results]) => results.length > 0)
+      .catch(() => false);
+
+    if (!tablesExist) {
+      console.log('Tables not found, running migrations...');
+      const migrationsSuccess = await runMigrations();
+      if (!migrationsSuccess) {
+        console.error('Failed to run migrations. Server will not start.');
+        process.exit(1);
+      }
+    }
+
+    // Start server
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`✓ Server is running on port ${PORT}`);
       console.log(`✓ Environment: ${process.env.NODE_ENV || 'development'}`);
