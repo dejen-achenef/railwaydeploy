@@ -99,12 +99,6 @@ test1/
 
 ## Deployment
 
-### Docker
-```bash
-docker build -t node-api ./test1
-docker run -p 3000:3000 node-api
-```
-
 ### Railway
 See `railway.json` for configuration. Deploy from GitHub with root directory set to `test1`.
 
